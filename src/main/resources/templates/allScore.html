@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:shiro="http://www.thymeleaf.org/thymeleaf-extras-shiro">
+<head>
+    <meta charset="UTF-8">
+    <title>所有成绩</title>
+
+    <link rel="stylesheet" th:href="@{http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css}">
+    <!--引入bootstrap的css样式库-->
+    <script th:src="@{http://cdn.bootcss.com/jquery/1.11.1/jquery.min.js}"></script><!--引入jQuery-->
+    <script th:src="@{http://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js}"></script><!--引入bootstrap-->
+
+</head>
+<body>
+
+
+<div class="container">
+    <div class="row clearfix">
+        <div class="col-md-12 column">
+
+            <h1 align="center">
+                所有成绩
+            </h1>
+            <div class="col-md-12 column">
+                <div style="width: 89%; float: left;" align="right">
+                    <div class="glyphicon glyphicon-user" th:text="${session.loginUser.getUsername()}"></div>
+                </div>
+                <div style="width: 6%; float: left;" align="right">
+
+
+                    <button class="btn btn-default btn-xs" data-toggle="modal" data-target="#myModal">修改密码</button>
+                    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content" style="width: 300px;height: 140px;">
+                                <div class="modal-header" align="center">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                    <h4 class="modal-title" id="myModalLabel">修改密码</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <form class="form-inline"  th:action="@{/updatePassword}" method="post">
+                                        <div class="form-group">
+                                            <input type="text" name="username" th:value="${session.loginUser.getUsername()}" hidden>
+                                            <input required="required" type="password" class="form-control" name="password" placeholder="请输入新密码">
+                                        </div>
+                                        <button type="submit" class="btn btn-success">确认</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div style="width: 5%; float: right;">
+                    <div style="float: right" th:if="${session.loginUser != null}">
+                        <span class="glyphicon glyphicon-log-out"></span>
+                        <a th:href="@{/logout}">注销</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="container">
+    <div class="row-fluid">
+        <div class="col-md-2 column"></div>
+        <div class="col-md-8 column">
+
+            <div shiro:hasPermission="admin">
+                <div class="col-lg-5">
+                    <div class="input-group">
+                        <input type="text" class="form-control" aria-label="..." placeholder="请输入学号、姓名或课程名"
+                               id="text1">
+                        <div class="input-group-btn">
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
+                                    aria-haspopup="true" aria-expanded="false" onclick="setInputValue()">查找 <span
+                                    class="caret"></span></button>
+                            <ul class="dropdown-menu dropdown-menu-right" style="width: 150px;height: 108px;">
+                                <li>
+                                    <form th:action="@{/queryScoreByStudentID}" th:method="get">
+                                        <input class="111" type="text" id="text2" name="id" th:hidden="true">
+                                        <button th:type="submit" class="btn btn-default"
+                                                style="width: 158px;height: 32px;">按学号查找
+                                        </button>
+                                    </form>
+                                </li>
+                                <li>
+                                    <form th:action="@{/queryScoreByStudentName}" th:method="get">
+                                        <input class="111" type="text" id="text3" name="id" th:hidden="true">
+                                        <button th:type="submit" class="btn btn-default"
+                                                style="width: 158px;height: 32px;">按姓名查找
+                                        </button>
+                                    </form>
+                                </li>
+                                <li>
+                                    <form th:action="@{/queryScoreByCourseName}" th:method="get">
+                                        <input class="111" type="text" id="text4" name="id" th:hidden="true">
+                                        <button th:type="submit" class="btn btn-default"
+                                                style="width: 158px;height: 32px;">按课程名查找
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                            <script language="JavaScript" type="text/javascript">
+                                function setInputValue() {
+                                    document.getElementById('text2').value = document.getElementById('text1').value;
+                                    document.getElementById('text3').value = document.getElementById('text1').value;
+                                    document.getElementById('text4').value = document.getElementById('text1').value;
+                                }
+                            </script>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 column"></div>
+                <div class="col-md-2 column">
+                    <a th:href="@{/allScore}">
+                        <button type="button" class="btn btn-success" style="float: left" title="所有成绩">所有成绩</button>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-md-1 column">
+                <button class="btn btn-success" style="float: right" onclick="location.reload()" title="刷新">刷新</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+<br>
+<div class="container">
+    <div class="=row-fluid">
+        <div class="col-md-2 column"></div>
+        <div class="col-md-8 column">
+            <table class="table table-bordered table table-hover">
+                <thead>
+                <tr>
+                    <th>学号</th>
+                    <th>姓名</th>
+                    <th>课程名</th>
+                    <th>成绩</th>
+                    <div shiro:hasPermission="admin">
+                        <th style="text-align: center">录入/修改成绩</th>
+                    </div>
+                    <div shiro:hasPermission="teacher">
+                        <th style="text-align: center">录入/修改成绩</th>
+                    </div>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="achievement,achievementStat:${list}">
+                    <td th:text="${achievement.getStudentID()}"></td>
+                    <td th:text="${achievement.getStudentName()}"></td>
+                    <td th:text="${achievement.getCourseName()}"></td>
+                    <div shiro:hasPermission="student">
+                        <td th:text="${achievement.getScore()}"></td>
+                    </div>
+
+                    <div shiro:hasPermission="admin">
+                        <form class="form-inline" th:action="@{/updateScore}" method="post">
+                            <td>
+                                <input required="required" type="text" class="form-control" name="score"
+                                       th:value="${achievement.getScore()}" style="width: 60px;height:30px;">
+                            </td>
+                            <td style="text-align: center">
+                                <input name="studentID" th:value="${achievement.getStudentID()}" th:hidden="true">
+                                <input name="courseID" th:value="${achievement.getCourseID()}" th:hidden="true">
+                                <button type="submit" class="btn btn-default btn-sm">
+                                    录入/修改
+                                </button>
+                            </td>
+
+                        </form>
+                    </div>
+                    <div shiro:hasPermission="teacher">
+                        <form class="form-inline" th:action="@{/updateScore}" method="post">
+                            <td>
+                                <input required="required" type="text" class="form-control" name="score"
+                                       th:value="${achievement.getScore()}" style="width: 60px;height:30px;">
+                            </td>
+                            <td style="text-align: center">
+                                <input name="studentID" th:value="${achievement.getStudentID()}" th:hidden="true">
+                                <input name="courseID" th:value="${achievement.getCourseID()}" th:hidden="true">
+                                <button type="submit" class="btn btn-default btn-sm">
+                                    确认
+                                </button>
+                            </td>
+                        </form>
+                    </div>
+                </tr>
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+</body>
+</html>
